@@ -2,6 +2,7 @@
 
 #include "programs/utils.glsl"
 #include "programs/frag_utils.glsl"
+#include "programs/brdf.glsl"
 
 uniform sampler2D gtexture;
 uniform sampler2D lightmap; 
@@ -34,41 +35,30 @@ void main() {
     vec3 normalTexture = texture(normals, texCoord).rgb * 2.0 - 1.0;
     normalTexture.b = sqrt(1.0 - dot(normalTexture.xy, normalTexture.xy));
     
-    // normal direction mixed with the texture normals
-    vec3 mixedNormal = tbnNormalTangent(geoNormal, viewDirToWorldDir(tangent)) * normalTexture.rgb;
-
-    // calculating light based on the direction of the sun/moon
+    vec3 normal = tbnNormalTangent(geoNormal, viewDirToWorldDir(tangent)) * normalTexture.rgb;
     vec3 shadowDir = viewDirToWorldDir(normalize(shadowLightPosition));
-
-    // sunLightFactor = sunLightFactor * 0.5 + 0.5;
 
     // specular
     vec4 specularTexture = texture(specular, texCoord);
     float perceptualSmoothness = specularTexture.r;
 
+    // material properties
     float roughness = pow(1.0 - perceptualSmoothness, 2.0);
     float smoothness = 1.0 - sqrt(roughness);
-    float shininess = 1.0 + roughness * 100.0;
+    // reflectance only goes up to 229, as defined by labPBR
+    float metallic = specularTexture.g * 255.0 > 229.0 ? 1.0 : 0.0;
+    // metallic will use albedo color, use specular texture otherwise
+    vec3 reflectance = mix(vec3(specularTexture.g), albedoColor.rgb, metallic);
 
-    vec3 reflectionDir = reflect(-shadowDir, mixedNormal);
     // points towards the camera
     vec3 viewDir = normalize(cameraPosition - viewPosToWorldPos(viewSpacePos.xyz));
 
-    float diffuseLight = roughness * clamp(dot(normalize(mixedNormal), shadowDir), 0.0, 1.0);
-    float specularLight = smoothness * pow(clamp(dot(reflectionDir, viewDir), 0.0, 1.0), shininess);
+    vec3 blockColor = 0.2 * albedoColor.rgb + brdf(shadowDir, viewDir, roughness, normal, albedoColor.rgb, metallic, reflectance);
+    blockColor *= lightColor.rgb;
+    blockColor *= aoAmount;
 
-    float totalLight = clamp(diffuseLight + specularLight, 0.2, 1.0);
-    // totalLight = totalLight * 0.5 + 0.5;
-
-    vec3 blockLight = lightColor.rgb * totalLight;
-
-    outColor0 = vec4(albedoColor.rgb * blockLight * aoAmount, albedoColor.a);
-
-    // outColor0 = albedoColor * linearColor(vexColor) * lightColor;
-
-    outColor0 = unlinearColor(outColor0);
+    outColor0 = unlinearColor(vec4(blockColor, albedoColor.a));
 
     // outColor0 = vec4(vec3(roughness), 1.0);
     // outColor0 = vec4(vec3(albedoColor.a), 1.0);
-    // outColor0 = vec4(blockLight, 1.0);
 }
