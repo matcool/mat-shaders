@@ -47,13 +47,18 @@ void main() {
     float smoothness = 1.0 - sqrt(roughness);
     // reflectance only goes up to 229, as defined by labPBR
     float metallic = specularTexture.g * 255.0 > 229.0 ? 1.0 : 0.0;
-    // metallic will use albedo color, use specular texture otherwise
-    vec3 reflectance = mix(vec3(specularTexture.g), albedoColor.rgb, metallic);
+    vec3 reflectance = mix(vec3(specularTexture.g), vec3(0.3), metallic);
 
     // points towards the camera
     vec3 viewDir = normalize(cameraPosition - viewPosToWorldPos(viewSpacePos.xyz));
 
-    vec3 blockColor = 0.2 * albedoColor.rgb + brdf(shadowDir, viewDir, roughness, normal, albedoColor.rgb, metallic, reflectance);
+    float ambientLight = 0.2 * clamp(dot(geoNormal, normal), 0.0, 1.0);
+
+    vec3 blockColor = brdf(shadowDir, viewDir, roughness, normal, albedoColor.rgb, metallic, reflectance);
+    // prevents the block from being too dark
+    blockColor += ambientLight * albedoColor.rgb;
+    // blockColor = max(blockColor, ambientLight * albedoColor.rgb);
+
     blockColor *= lightColor.rgb;
     blockColor *= aoAmount;
 
@@ -61,4 +66,5 @@ void main() {
 
     // outColor0 = vec4(vec3(roughness), 1.0);
     // outColor0 = vec4(vec3(albedoColor.a), 1.0);
+    // outColor0 = vec4(reflectance, 1.0);
 }
