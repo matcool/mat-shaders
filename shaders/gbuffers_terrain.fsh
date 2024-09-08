@@ -16,6 +16,8 @@ uniform vec3 shadowLightPosition;
 
 uniform float alphaTestRef;
 
+uniform int heldBlockLightValue;
+
 /* DRAWBUFFERS:0 */
 out vec4 outColor0;
 
@@ -88,6 +90,15 @@ void main() {
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
 
     /// lighting and colors
+    // dynamic lighting on held items
+    if (heldBlockLightValue > 0) {
+        float cameraDist = length(worldPos - cameraPosition);
+        float d = clamp(1.0 - (cameraDist / heldBlockLightValue), 0.0, 1.0);
+        // bigger fall off
+        d = pow(d, 3.0);
+        blockLightColor += vec3(heldBlockLightValue / 16.0) * d;
+    }
+
     vec3 ambientLight = clamp(blockLightColor * aoAmount + 0.2 * skyLightColor, 0.0, 0.9) * clamp(dot(geoNormal, normal), 0.0, 1.0);
 
     // also use sky light here for night time blueish light
