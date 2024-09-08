@@ -3,6 +3,7 @@
 #include "programs/utils.glsl"
 #include "programs/frag_utils.glsl"
 #include "programs/brdf.glsl"
+#include "programs/water_caustics.glsl"
 
 uniform sampler2D gtexture;
 uniform sampler2D lightmap; 
@@ -11,10 +12,12 @@ uniform sampler2D specular;
 uniform sampler2DShadow shadowtex0;
 uniform sampler2DShadow shadowtex1;
 uniform sampler2D shadowcolor0;
+uniform sampler2D shadowcolor1;
 
 uniform vec3 shadowLightPosition;
 
 uniform float alphaTestRef;
+uniform float frameTimeCounter;
 
 uniform int heldBlockLightValue;
 
@@ -87,7 +90,12 @@ void main() {
     float shadowMult = calculateShadowVisibility(shadowtex0, shadowScreenPos, acneBias);
     float shadowSolidMult = calculateShadowVisibility(shadowtex1, shadowScreenPos, acneBias);
     vec3 shadowBlockColor = texture(shadowcolor0, shadowScreenPos.xy).rgb;
+    vec3 shadowBlockData = texture(shadowcolor1, shadowScreenPos.xy).rgb;
 
+    if (shadowBlockData.x == 1) {
+        // block is water, so apply fake caustics
+        shadowBlockColor = calculateWaterCaustics(cross(worldPos, shadowDir), shadowBlockColor, frameTimeCounter);
+    }
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
 
     /// lighting and colors
@@ -112,6 +120,4 @@ void main() {
 
     // outColor0 = vec4(vec3(calculateShadowVisibility(shadowtex0, shadowScreenPos, acneBias)), 1.0);
     // outColor0 = vec4(vec3(ambientLight), 1.0);
-
-    // outColor0 = texture(shadowtex0, gl_FragCoord.xy / vec2(1920, 1080));
 }
