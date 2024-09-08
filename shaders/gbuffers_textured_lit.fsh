@@ -95,6 +95,8 @@ void main() {
     if (shadowBlockData.x == 1) {
         // block is water, so apply fake caustics
         shadowBlockColor = calculateWaterCaustics(cross(worldPos, shadowDir), shadowBlockColor, frameTimeCounter);
+        // outColor0 = vec4(shadowBlockColor, 1.0);
+        // return;
     }
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
 
