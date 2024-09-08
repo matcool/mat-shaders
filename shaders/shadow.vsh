@@ -1,6 +1,6 @@
 #version 460 compatibility
 
-#include "programs/shadow_utils.glsl"
+#include "core/shadow_utils.glsl"
 
 in vec3 mc_Entity;
 

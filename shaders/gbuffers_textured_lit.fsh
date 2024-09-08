@@ -1,9 +1,9 @@
 #version 460
 
-#include "programs/utils.glsl"
-#include "programs/frag_utils.glsl"
-#include "programs/brdf.glsl"
-#include "programs/water_caustics.glsl"
+#include "core/utils.glsl"
+#include "core/frag_utils.glsl"
+#include "core/brdf.glsl"
+#include "core/water_caustics.glsl"
 
 uniform sampler2D gtexture;
 uniform sampler2D lightmap; 
