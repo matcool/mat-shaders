@@ -30,6 +30,7 @@ in vec3 tangent;
 
 const float ambientOcclusionLevel = 0.8;
 const int shadowMapResolution = 1024; // [512 1024 2048 4096 8192]
+const float sunPathRotation = -30.0;
 const bool shadowHardwareFiltering = true;
 
 vec2 poissonDisk[4] = vec2[] (
