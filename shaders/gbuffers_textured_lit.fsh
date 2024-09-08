@@ -6,7 +6,7 @@
 #include "core/water_caustics.glsl"
 
 uniform sampler2D gtexture;
-uniform sampler2D lightmap; 
+uniform sampler2D lightmap;
 uniform sampler2D normals;
 uniform sampler2D specular;
 uniform sampler2DShadow shadowtex0;

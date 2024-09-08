@@ -33,8 +33,8 @@ vec3 brdf(vec3 lightDir, vec3 viewDir, float roughness, vec3 normal, vec3 albedo
 
     vec3 phongDiffuse = rhoD;
     vec3 cookTorrance = (fresnelReflectance*normalDistributionFunctionGGX*geometry)/(4*NdotL*NdotV);
-    
+
     vec3 BRDF = (phongDiffuse+cookTorrance)*NdotL;
-   
+
     return BRDF;
 }
