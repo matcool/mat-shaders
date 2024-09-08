@@ -19,7 +19,7 @@ vec3 viewDirToWorldDir(vec3 vDir) {
 vec3 worldPosToShadowScreenPos(vec3 worldPos, vec3 normal) {
     vec3 feetPos = worldPos - cameraPosition;
     // prevents some issues on sides of blocks
-    feetPos += normal * 0.01;
+    feetPos += normal * 0.1;
     vec3 shadowViewPos = (shadowModelView * vec4(feetPos, 1.0)).xyz;
     vec4 shadowClipPos = shadowProjection * vec4(shadowViewPos, 1.0);
     vec3 shadowNdcPos = shadowClipPos.xyz / shadowClipPos.w;

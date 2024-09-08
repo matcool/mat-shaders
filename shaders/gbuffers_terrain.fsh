@@ -8,8 +8,8 @@ uniform sampler2D gtexture;
 uniform sampler2D lightmap; 
 uniform sampler2D normals;
 uniform sampler2D specular;
-uniform sampler2D shadowtex0;
-uniform sampler2D shadowtex1;
+uniform sampler2DShadow shadowtex0;
+uniform sampler2DShadow shadowtex1;
 uniform sampler2D shadowcolor0;
 
 uniform vec3 shadowLightPosition;
@@ -28,6 +28,23 @@ in vec3 tangent;
 
 const float ambientOcclusionLevel = 0.8;
 const int shadowMapResolution = 1024; // [512 1024 2048 4096 8192]
+const bool shadowHardwareFiltering = true;
+
+vec2 poissonDisk[4] = vec2[] (
+    vec2(-0.94201624, -0.39906216),
+    vec2(0.94558609, -0.76890725),
+    vec2(-0.094184101, -0.92938870),
+    vec2(0.34495938, 0.29387760)
+);
+
+float calculateShadowVisibility(sampler2DShadow s, vec3 shadowScreenPos, float acneBias) {
+    float visibility = 0.0;
+    for (int i = 0; i < 4; i++) {
+        visibility += texture(s, vec3(shadowScreenPos.xy + poissonDisk[i] / shadowMapResolution, shadowScreenPos.z), acneBias);
+    }
+    return visibility / 4.0;
+    // return texture(s, shadowScreenPos, acneBias);
+}
 
 void main() {
     // lightCoord is (blockLightAmt, skyLightAmt), and it starts at 1/32
@@ -63,12 +80,9 @@ void main() {
 
     /// shadows
     vec3 shadowScreenPos = worldPosToShadowScreenPos(worldPos, normal);
-    float shadowTextureValue = texture(shadowtex0, shadowScreenPos.xy).r;
-    // float shadowFarAway = pow(abs(shadowTextureValue - shadowScreenPos.z), 1.0 / 2.0);
-    // shadowScreenPos.z is the depth from the light's perspective,
-    // so values less than the depth are in shadow, because another block was closer
-    float shadowMult = smoothstep(shadowScreenPos.z - 0.001, shadowScreenPos.z, shadowTextureValue);
-    float shadowSolidMult = smoothstep(shadowScreenPos.z - 0.001, shadowScreenPos.z, texture(shadowtex1, shadowScreenPos.xy).r);
+    float acneBias = 0.001;
+    float shadowMult = calculateShadowVisibility(shadowtex0, shadowScreenPos, acneBias);
+    float shadowSolidMult = calculateShadowVisibility(shadowtex1, shadowScreenPos, acneBias);
     vec3 shadowBlockColor = texture(shadowcolor0, shadowScreenPos.xy).rgb;
 
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
@@ -84,8 +98,8 @@ void main() {
 
     outColor0 = unlinearColor(vec4(finalColor, albedoColor.a));
 
-    // outColor0 = vec4(vec3(shadow), 1.0);
-    // outColor0 = vec4(vec3(albedoColor.a), 1.0);
+    // outColor0 = vec4(vec3(calculateShadowVisibility(shadowtex0, shadowScreenPos, acneBias)), 1.0);
+    // outColor0 = vec4(vec3(ambientLight), 1.0);
 
     // outColor0 = texture(shadowtex0, gl_FragCoord.xy / vec2(1920, 1080));
 }
