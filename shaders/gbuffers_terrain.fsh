@@ -74,7 +74,7 @@ void main() {
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
 
     /// lighting and colors
-    vec3 ambientLight = (blockLightColor * aoAmount + 0.2 * skyLightColor) * clamp(dot(geoNormal, normal), 0.0, 1.0);
+    vec3 ambientLight = clamp(blockLightColor * aoAmount + 0.2 * skyLightColor, 0.0, 0.9) * clamp(dot(geoNormal, normal), 0.0, 1.0);
 
     // also use sky light here for night time blueish light
     vec3 finalColor = skyLightColor * shadowColor * brdf(shadowDir, viewDir, roughness, normal, albedoColor.rgb, metallic, reflectance);
