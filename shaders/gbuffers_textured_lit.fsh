@@ -5,6 +5,7 @@
 #include "core/brdf.glsl"
 #include "core/water_caustics.glsl"
 #include "core/options.glsl"
+#include "core/debug.glsl"
 
 uniform sampler2D gtexture;
 uniform sampler2D lightmap;
@@ -87,19 +88,21 @@ void main() {
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
 
     /// lighting and colors
-    // lightCoord is (blockLightAmt, skyLightAmt), and it starts at 1/32
-    vec3 blockLightColor = linearColor(texture(lightmap, vec2(lightCoord.x, 1.0 / 32.0)).rgb);
-    vec3 skyLightColor = linearColor(texture(lightmap, vec2(1.0 / 32.0, lightCoord.y)).rgb);
-    float aoAmount = vexColor.a;
-
+    float blockLightLevel = lightCoord.x;
     // dynamic lighting on held items
     if (heldBlockLightValue > 0) {
+        // TODO: this is wrong in F5
         float cameraDist = length(worldPos - cameraPosition);
-        float d = clamp(1.0 - (cameraDist / heldBlockLightValue), 0.0, 1.0);
+        float held = clamp(1.0 - (cameraDist / heldBlockLightValue), 0.0, 1.0);
         // bigger fall off
-        d = pow(d, 3.0);
-        blockLightColor += vec3(heldBlockLightValue / 16.0) * d;
+        held = pow(held, 3.0);
+        held = held * (heldBlockLightValue / 16.0);
+        blockLightLevel = max(held, blockLightLevel);
     }
+
+    vec3 blockLightColor = linearColor(texture(lightmap, vec2(blockLightLevel, 1.0 / 32.0)).rgb);
+    vec3 skyLightColor = linearColor(texture(lightmap, vec2(1.0 / 32.0, lightCoord.y)).rgb);
+    float aoAmount = vexColor.a;
 
     vec3 ambientLight = clamp(blockLightColor * aoAmount + 0.2 * skyLightColor, 0.0, 0.9) * clamp(dot(geoNormal, normal), 0.0, 1.0);
 
