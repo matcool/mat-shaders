@@ -1,9 +1,15 @@
 option.shadowMapResolution = Shadow Map Resolution
 suffix.shadowMapResolution = px
-option.shadowMapResolution.comment = Resolution for the shadow map.\nHigher resolution is more demanding but gives sharper shadows..
+option.shadowMapResolution.comment = Resolution for the shadow map.\nHigher resolution is more demanding but gives sharper shadows
 
 option.SHADOW_DISTORT_FACTOR = Shadow Distortion Factor
-option.SHADOW_DISTORT_FACTOR.comment = Amount to distort shadow space by.\nSmaller values means higher quality near the player, but lower quality elsewhere..
+option.SHADOW_DISTORT_FACTOR.comment = Amount to distort shadow space by.\nSmaller values means higher quality near the player, but lower quality elsewhere
 
 option.ENABLE_SHADOW_DISTORT = Enable Shadow Distortion
+option.ENABLE_SHADOW_DISTORT.comment = Whether to apply shadow space distortion, should never be off
 
+option.ambientOcclusionLevel = Ambient Occlusion Level
+option.ambientOcclusionLevel.comment = Level of ambient occlusion for shading blocks
+
+option.sunPathRotation = Sun Rotation
+suffix.sunPathRotation = °

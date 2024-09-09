@@ -4,6 +4,7 @@
 #include "core/space_trans.glsl"
 #include "core/brdf.glsl"
 #include "core/water_caustics.glsl"
+#include "core/options.glsl"
 
 uniform sampler2D gtexture;
 uniform sampler2D lightmap;
@@ -30,11 +31,6 @@ in vec4 vexColor;
 in vec2 lightCoord;
 in vec3 geoNormal;
 in vec3 tangent;
-
-const float ambientOcclusionLevel = 0.8;
-const int shadowMapResolution = 1024; // [512 1024 2048 4096 8192]
-const float sunPathRotation = -30.0;
-const bool shadowHardwareFiltering = true;
 
 vec2 poissonDisk[4] = vec2[] (
     vec2(-0.94201624, -0.39906216),
