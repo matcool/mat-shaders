@@ -49,18 +49,13 @@ float calculateShadowVisibility(sampler2DShadow s, vec3 shadowScreenPos, float a
 }
 
 void main() {
-    // lightCoord is (blockLightAmt, skyLightAmt), and it starts at 1/32
-    vec3 blockLightColor = linearColor(texture(lightmap, vec2(lightCoord.x, 1.0 / 32.0)).rgb);
-    vec3 skyLightColor = linearColor(texture(lightmap, vec2(1.0 / 32.0, lightCoord.y)).rgb);
-
     vec4 albedoColor = linearColor(texture(gtexture, texCoord)) * vec4(linearColor(vexColor.rgb), 1.0);
-    float aoAmount = vexColor.a;
     if (albedoColor.a <= alphaTestRef) discard;
-
 
     vec3 worldPos = viewPosToWorldPos(viewSpacePos.xyz);
 
-    vec3 shadowDir = viewDirToWorldDir(normalize(shadowLightPosition));
+    // points towards the sun
+    vec3 lightDir = viewDirToWorldDir(normalize(shadowLightPosition));
     // points towards the camera
     vec3 viewDir = normalize(cameraPosition - worldPos);
 
@@ -69,12 +64,9 @@ void main() {
     normalTexture.b = sqrt(1.0 - dot(normalTexture.xy, normalTexture.xy));
     vec3 normal = tbnNormalTangent(geoNormal, viewDirToWorldDir(tangent)) * normalTexture.rgb;
 
-    /// specular
-    vec4 specularTexture = texture(specular, texCoord);
-    float perceptualSmoothness = specularTexture.r;
-
     /// material properties
-    float roughness = pow(1.0 - perceptualSmoothness, 2.0);
+    vec4 specularTexture = texture(specular, texCoord);
+    float roughness = pow(1.0 - specularTexture.r, 2.0);
     float smoothness = 1.0 - sqrt(roughness);
     // reflectance only goes up to 229, as defined by labPBR
     float metallic = specularTexture.g * 255.0 > 229.0 ? 1.0 : 0.0;
@@ -90,13 +82,16 @@ void main() {
 
     if (shadowBlockData.x == 1) {
         // block is water, so apply fake caustics
-        shadowBlockColor = calculateWaterCaustics(cross(worldPos, shadowDir), shadowBlockColor, frameTimeCounter);
-        // outColor0 = vec4(shadowBlockColor, 1.0);
-        // return;
+        shadowBlockColor = calculateWaterCaustics(cross(worldPos, lightDir), shadowBlockColor, frameTimeCounter);
     }
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
 
     /// lighting and colors
+    // lightCoord is (blockLightAmt, skyLightAmt), and it starts at 1/32
+    vec3 blockLightColor = linearColor(texture(lightmap, vec2(lightCoord.x, 1.0 / 32.0)).rgb);
+    vec3 skyLightColor = linearColor(texture(lightmap, vec2(1.0 / 32.0, lightCoord.y)).rgb);
+    float aoAmount = vexColor.a;
+
     // dynamic lighting on held items
     if (heldBlockLightValue > 0) {
         float cameraDist = length(worldPos - cameraPosition);
@@ -109,13 +104,9 @@ void main() {
     vec3 ambientLight = clamp(blockLightColor * aoAmount + 0.2 * skyLightColor, 0.0, 0.9) * clamp(dot(geoNormal, normal), 0.0, 1.0);
 
     // also use sky light here for night time blueish light
-    vec3 finalColor = skyLightColor * shadowColor * brdf(shadowDir, viewDir, roughness, normal, albedoColor.rgb, metallic, reflectance);
+    vec3 finalColor = skyLightColor * shadowColor * brdf(lightDir, viewDir, roughness, normal, albedoColor.rgb, metallic, reflectance);
     // prevents the block from being too dark
     finalColor += ambientLight * albedoColor.rgb;
-    // finalColor = max(finalColor, ambientLight * albedoColor.rgb);
 
     outColor0 = unlinearColor(vec4(finalColor, albedoColor.a));
-
-    // outColor0 = vec4(vec3(calculateShadowVisibility(shadowtex0, shadowScreenPos, acneBias)), 1.0);
-    // outColor0 = vec4(vec3(ambientLight), 1.0);
 }
