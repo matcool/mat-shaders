@@ -1,6 +1,4 @@
-#pragma once
-
-#include "shadow_utils.glsl"
+#include "distort.glsl"
 
 uniform mat4 gbufferModelViewInverse;
 uniform mat4 shadowModelView;
@@ -24,7 +22,6 @@ vec3 worldPosToShadowScreenPos(vec3 worldPos, vec3 normal) {
     vec4 shadowClipPos = shadowProjection * vec4(shadowViewPos, 1.0);
     vec3 shadowNdcPos = shadowClipPos.xyz / shadowClipPos.w;
     // apply player distortion
-    float playerDist = length(shadowNdcPos.xy);
-    shadowNdcPos.xy = transformShadowSpace(shadowNdcPos.xy, playerDist);
+    shadowNdcPos.xy = distortShadowSpace(shadowNdcPos.xy);
     return shadowNdcPos * 0.5 + 0.5;
 }

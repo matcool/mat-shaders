@@ -1,7 +1,5 @@
-#pragma once
-
 // Defines the BRDF (Bidirectional Reflectance Distribution Function) using the cook torrance model
-
+// Source: https://github.com/agentclone8/BRDF-Function
 vec3 brdf(vec3 lightDir, vec3 viewDir, float roughness, vec3 normal, vec3 albedo, float metallic, vec3 reflectance) {
     float alpha = pow(roughness, 2.0);
 
@@ -15,11 +13,11 @@ vec3 brdf(vec3 lightDir, vec3 viewDir, float roughness, vec3 normal, vec3 albedo
 
     // Fresnel
     vec3 F0 = reflectance;
-    vec3 fresnelReflectance = F0 + (1.0 - F0) * pow(1.0 - VdotH, 5.0); //Schlick's Approximation
+    vec3 fresnelReflectance = F0 + (1.0 - F0) * pow(1.0 - VdotH, 5.0); // Schlick's Approximation
 
-    //phong diffuse
+    // phong diffuse
     vec3 rhoD = albedo;
-    rhoD *= (vec3(1.0)- fresnelReflectance); //energy conservation - light that doesn't reflect adds to diffuse
+    rhoD *= vec3(1.0) - fresnelReflectance; // energy conservation - light that doesn't reflect adds to diffuse
 
     // rhoD *= (1-metallic); //diffuse is 0 for metals
 
