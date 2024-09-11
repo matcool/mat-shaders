@@ -13,3 +13,5 @@ option.ambientOcclusionLevel.comment = Level of ambient occlusion for shading bl
 
 option.sunPathRotation = Sun Rotation
 suffix.sunPathRotation = °
+
+option.ENABLE_EASTER_EGG = Enable Easter Egg

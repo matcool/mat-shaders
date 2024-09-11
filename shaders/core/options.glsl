@@ -10,4 +10,6 @@ const float sunPathRotation = -30.0; // [-45.0 -30.0 -15.0 0.0 15.0 30.0 45.0]
 #define SHADOW_DISTORT_FACTOR 0.08 // [0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.1]
 #define ENABLE_SHADOW_DISTORT
 
+//#define ENABLE_EASTER_EGG
+
 #endif // _H_OPTIONS_

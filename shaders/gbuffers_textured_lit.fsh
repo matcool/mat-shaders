@@ -7,7 +7,9 @@
 #include "core/options.glsl"
 #include "core/debug.glsl"
 #include "core/blocks.glsl"
+#ifdef ENABLE_EASTER_EGG
 #include "core/special_block.glsl"
+#endif
 
 uniform sampler2D gtexture;
 uniform sampler2D lightmap;
@@ -67,10 +69,12 @@ void main() {
     // points towards the camera
     vec3 viewDir = normalize(cameraPosition - worldPos);
 
+#ifdef ENABLE_EASTER_EGG
     if (IS_BLOCK(blockData.x, BLOCK_ID_SPECIAL)) {
         outColor0 = calcSpecialBlock(fract(worldPos - 0.0001 * geoNormal), -viewDir, frameTimeCounter);
         return;
     }
+#endif
 
     /// normal
     vec3 normalTexture = texture(normals, texCoord).rgb * 2.0 - 1.0;
