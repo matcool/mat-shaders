@@ -9,6 +9,7 @@ in vec2 vaUV0;
 in ivec2 vaUV2;
 in vec3 vaNormal;
 in vec4 at_tangent;
+in vec3 mc_Entity;
 
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
@@ -24,6 +25,7 @@ out vec4 vexColor;
 out vec2 lightCoord;
 out vec3 geoNormal;
 out vec3 tangent;
+out vec3 blockData;
 
 void main() {
     vec4 viewPos = modelViewMatrix * vec4(vaPosition + chunkOffset, 1.0);
@@ -36,6 +38,7 @@ void main() {
     geoNormal = vaNormal;
     tangent = normalize(normalMatrix * at_tangent.xyz);
     viewSpacePos = viewPos;
+    blockData = mc_Entity;
 
     lightCoord = vaUV2 * (1.0 / 256.0) + (1.0 / 32.0);
 }

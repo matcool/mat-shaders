@@ -6,6 +6,8 @@
 #include "core/water_caustics.glsl"
 #include "core/options.glsl"
 #include "core/debug.glsl"
+#include "core/blocks.glsl"
+#include "core/special_block.glsl"
 
 uniform sampler2D gtexture;
 uniform sampler2D lightmap;
@@ -17,9 +19,13 @@ uniform sampler2D shadowcolor0;
 uniform sampler2D shadowcolor1;
 
 uniform vec3 shadowLightPosition;
+uniform vec3 eyePosition;
+uniform vec3 playerLookVector;
 
 uniform float alphaTestRef;
 uniform float frameTimeCounter;
+uniform float viewWidth;
+uniform float viewHeight;
 
 uniform int heldBlockLightValue;
 
@@ -32,6 +38,7 @@ in vec4 vexColor;
 in vec2 lightCoord;
 in vec3 geoNormal;
 in vec3 tangent;
+in vec3 blockData;
 
 vec2 poissonDisk[4] = vec2[] (
     vec2(-0.94201624, -0.39906216),
@@ -60,6 +67,11 @@ void main() {
     // points towards the camera
     vec3 viewDir = normalize(cameraPosition - worldPos);
 
+    if (IS_BLOCK(blockData.x, BLOCK_ID_SPECIAL)) {
+        outColor0 = calcSpecialBlock(fract(worldPos - 0.0001 * geoNormal), -viewDir, frameTimeCounter);
+        return;
+    }
+
     /// normal
     vec3 normalTexture = texture(normals, texCoord).rgb * 2.0 - 1.0;
     normalTexture.b = sqrt(1.0 - dot(normalTexture.xy, normalTexture.xy));
@@ -68,7 +80,6 @@ void main() {
     /// material properties
     vec4 specularTexture = texture(specular, texCoord);
     float roughness = pow(1.0 - specularTexture.r, 2.0);
-    float smoothness = 1.0 - sqrt(roughness);
     // reflectance only goes up to 229, as defined by labPBR
     float metallic = specularTexture.g * 255.0 > 229.0 ? 1.0 : 0.0;
     vec3 reflectance = mix(vec3(specularTexture.g), vec3(0.3), metallic);
@@ -81,6 +92,7 @@ void main() {
     vec3 shadowBlockColor = texture(shadowcolor0, shadowScreenPos.xy).rgb;
     vec3 shadowBlockData = texture(shadowcolor1, shadowScreenPos.xy).rgb;
 
+    // TODO: should be BLOCK_ID_WATER here but it doesnt work..
     if (shadowBlockData.x == 1) {
         // block is water, so apply fake caustics
         shadowBlockColor = calculateWaterCaustics(cross(worldPos, lightDir), shadowBlockColor, frameTimeCounter);
@@ -91,8 +103,7 @@ void main() {
     float blockLightLevel = lightCoord.x;
     // dynamic lighting on held items
     if (heldBlockLightValue > 0) {
-        // TODO: this is wrong in F5
-        float cameraDist = length(worldPos - cameraPosition);
+        float cameraDist = length(worldPos - eyePosition);
         float held = clamp(1.0 - (cameraDist / heldBlockLightValue), 0.0, 1.0);
         // bigger fall off
         held = pow(held, 3.0);
