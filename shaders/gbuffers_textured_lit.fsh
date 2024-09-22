@@ -123,7 +123,7 @@ void main() {
         blockLightLevel = max(held, blockLightLevel);
     }
 #ifdef DISABLE_BLOCK_LIGHT_TINT
-    vec3 blockLightColor = linearColor(vec3(blockLightLevel));
+    vec3 blockLightColor = linearColor(vec3(clamp(blockLightLevel, 0.1, 1.0)));
 #else
     vec3 blockLightColor = linearColor(texture(lightmap, vec2(blockLightLevel, 1.0 / 32.0)).rgb);
 #endif
