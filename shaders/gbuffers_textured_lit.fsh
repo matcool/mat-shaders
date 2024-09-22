@@ -108,7 +108,7 @@ void main() {
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
 #else
     // use skylight amount for shadow color /shrug
-    vec3 shadowColor = vec3(lightCoord.y);
+    vec3 shadowColor = vec3(linearMap(smoothstep(0.9, 0.95, lightCoord.y), 0.0, 1.0, 0.4, 1.0));
 #endif
 
     /// lighting and colors

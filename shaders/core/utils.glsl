@@ -21,4 +21,9 @@ float smin(float a, float b, float k) {
     return mix( b, a, h ) - k*h*(1.0-h);
 }
 
+// maps input x which is in range a-b to range c-d
+float linearMap(float x, float a, float b, float c, float d) {
+    return c + (d - c) * (x - a) / (b - a);
+}
+
 #endif
