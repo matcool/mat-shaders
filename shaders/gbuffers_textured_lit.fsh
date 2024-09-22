@@ -89,6 +89,7 @@ void main() {
     vec3 reflectance = mix(vec3(specularTexture.g), vec3(0.3), metallic);
 
     /// shadows
+#ifdef ENABLE_SHADOWS
     vec3 shadowScreenPos = worldPosToShadowScreenPos(worldPos, normal);
     float acneBias = 0.001;
     float shadowMult = calculateShadowVisibility(shadowtex0, shadowScreenPos, acneBias);
@@ -102,6 +103,10 @@ void main() {
         shadowBlockColor = calculateWaterCaustics(cross(worldPos, lightDir), shadowBlockColor, frameTimeCounter);
     }
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
+#else
+    // use skylight amount for shadow color /shrug
+    vec3 shadowColor = vec3(lightCoord.y);
+#endif
 
     /// lighting and colors
     float blockLightLevel = lightCoord.x;

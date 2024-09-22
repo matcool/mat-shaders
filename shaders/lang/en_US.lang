@@ -2,6 +2,8 @@ option.shadowMapResolution = Shadow Map Resolution
 suffix.shadowMapResolution = px
 option.shadowMapResolution.comment = Resolution for the shadow map.\nHigher resolution is more demanding but gives sharper shadows
 
+option.ENABLE_SHADOWS = Enable Shadows
+
 option.SHADOW_DISTORT_FACTOR = Shadow Distortion Factor
 option.SHADOW_DISTORT_FACTOR.comment = Amount to distort shadow space by.\nSmaller values means higher quality near the player, but lower quality elsewhere
 
