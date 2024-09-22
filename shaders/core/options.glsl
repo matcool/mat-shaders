@@ -13,4 +13,6 @@ const float sunPathRotation = -30.0; // [-45.0 -30.0 -15.0 0.0 15.0 30.0 45.0]
 
 //#define ENABLE_EASTER_EGG
 
+//#define DISABLE_BLOCK_LIGHT_TINT
+
 #endif // _H_OPTIONS_

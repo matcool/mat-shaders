@@ -119,8 +119,11 @@ void main() {
         held = held * (heldBlockLightValue / 16.0);
         blockLightLevel = max(held, blockLightLevel);
     }
-
+#ifdef DISABLE_BLOCK_LIGHT_TINT
+    vec3 blockLightColor = linearColor(vec3(blockLightLevel));
+#else
     vec3 blockLightColor = linearColor(texture(lightmap, vec2(blockLightLevel, 1.0 / 32.0)).rgb);
+#endif
     vec3 skyLightColor = linearColor(texture(lightmap, vec2(1.0 / 32.0, lightCoord.y)).rgb);
     float aoAmount = vexColor.a;
 
