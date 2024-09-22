@@ -100,7 +100,10 @@ void main() {
     // TODO: should be BLOCK_ID_WATER here but it doesnt work..
     if (shadowBlockData.x == 1) {
         // block is water, so apply fake caustics
-        shadowBlockColor = calculateWaterCaustics(cross(worldPos, lightDir), shadowBlockColor, frameTimeCounter);
+        vec3 causticsPos = worldPos + cross(worldPos, lightDir) * 0.01;
+        // DEBUG_COLOR(fract(causticsPos));
+        shadowBlockColor = calculateWaterCaustics(causticsPos, shadowBlockColor, frameTimeCounter);
+        // DEBUG_COLOR(shadowBlockColor);
     }
     vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
 #else
