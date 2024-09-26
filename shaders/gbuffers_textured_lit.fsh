@@ -20,6 +20,8 @@ uniform sampler2DShadow shadowtex1;
 uniform sampler2D shadowcolor0;
 uniform sampler2D shadowcolor1;
 
+uniform vec4 entityColor;
+
 uniform vec3 shadowLightPosition;
 uniform vec3 eyePosition;
 uniform vec3 playerLookVector;
@@ -30,6 +32,8 @@ uniform float viewWidth;
 uniform float viewHeight;
 
 uniform int heldBlockLightValue;
+uniform int entityId;
+uniform int renderStage;
 
 /* DRAWBUFFERS:0 */
 out vec4 outColor0;
@@ -61,6 +65,16 @@ float calculateShadowVisibility(sampler2DShadow s, vec3 shadowScreenPos, float a
 void main() {
     vec4 albedoColor = linearColor(texture(gtexture, texCoord)) * vec4(linearColor(vexColor.rgb), 1.0);
     if (albedoColor.a <= alphaTestRef) discard;
+    albedoColor.rgb = mix(albedoColor.rgb, entityColor.rgb, entityColor.a);
+
+    if (renderStage == MC_RENDER_STAGE_ENTITIES) {
+        albedoColor.a *= vexColor.a;
+        if (entityId == ENTITY_ID_SHADOW) {
+            // special entity, dont run lighting
+            outColor0 = unlinearColor(albedoColor);
+            return;
+        }
+    }
 
     vec3 worldPos = viewPosToWorldPos(viewSpacePos.xyz);
 

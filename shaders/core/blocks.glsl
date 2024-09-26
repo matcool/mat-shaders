@@ -2,3 +2,5 @@
 
 #define BLOCK_ID_WATER 100
 #define BLOCK_ID_SPECIAL 1000
+
+#define ENTITY_ID_SHADOW 1
