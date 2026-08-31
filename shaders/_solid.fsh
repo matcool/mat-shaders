@@ -23,9 +23,7 @@ uniform vec3 eyePosition;
 uniform vec3 playerLookVector;
 
 uniform float alphaTestRef;
-uniform float frameTimeCounter;
-uniform float viewWidth;
-uniform float viewHeight;
+uniform vec3 skyColor;
 
 uniform int heldBlockLightValue;
 uniform int entityId;
@@ -44,6 +42,7 @@ in vec2 lightCoord;
 in vec3 geoNormal;
 in vec3 tangent;
 in vec3 blockData;
+in float chunkFade;
 
 void main() {
     vec4 albedoColor = linearColor(texture(gtexture, texCoord)) * vec4(linearColor(vexColor.rgb), 1.0);
@@ -74,4 +73,8 @@ void main() {
     outLightmap = vec4(lightCoord, aoAmount, 1.0);
     outNormal = vec4(normal * 0.5 + 0.5, 1.0);
     outMaterial = vec4(specularTexture.rg, 0.0, 1.0);
+
+    #ifdef IRIS_FEATURE_FADE_VARIABLE
+    outColor0 = mix(vec4(skyColor, 1.0), outColor0, min(abs(chunkFade) + 0.5, 1.0));
+    #endif
 }

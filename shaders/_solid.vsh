@@ -15,6 +15,9 @@ out vec2 lightCoord;
 out vec3 geoNormal;
 out vec3 tangent;
 out vec3 blockData;
+#ifdef IRIS_FEATURE_FADE_VARIABLE
+out float chunkFade;
+#endif
 
 void main() {
     vec4 viewPos = gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0);
@@ -29,4 +32,8 @@ void main() {
     blockData = mc_Entity;
 
     lightCoord = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
+
+    #ifdef IRIS_FEATURE_FADE_VARIABLE
+    chunkFade = mc_chunkFade;
+    #endif
 }
