@@ -1,4 +1,4 @@
-#version 460
+#version 330 compatibility
 
 #include "core/utils.glsl"
 #include "core/space_trans.glsl"
@@ -36,7 +36,7 @@ uniform int entityId;
 uniform int renderStage;
 
 /* DRAWBUFFERS:0 */
-out vec4 outColor0;
+layout(location = 0) out vec4 outColor0;
 
 in vec4 viewSpacePos;
 in vec2 texCoord;

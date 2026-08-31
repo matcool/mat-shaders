@@ -1,4 +1,4 @@
-#version 460 compatibility
+#version 330 compatibility
 
 uniform sampler2D gtexture;
 
@@ -13,7 +13,7 @@ in vec4 vexColor;
 in vec3 blockData;
 
 void main() {
-    vec4 albedoColor = texture(gtexture, texCoord) * vec4(vexColor.rgb, 1.0);
+    vec4 albedoColor = texture(gtexture, texCoord) * vexColor;
     if (albedoColor.a <= alphaTestRef) discard;
 
     outColor0 = albedoColor;

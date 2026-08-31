@@ -1,19 +1,8 @@
-#version 460
+#version 330 compatibility
 
-in vec3 vaPosition;
-// includes both foliage color and also ambient occlusion
-in vec4 vaColor;
-// texture (u, v)
-in vec2 vaUV0;
-// lightmap (u, v)
-in ivec2 vaUV2;
-in vec3 vaNormal;
 in vec4 at_tangent;
 in vec3 mc_Entity;
 
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat4 gbufferModelViewInverse;
 uniform mat3 normalMatrix;
 
 uniform vec3 chunkOffset;
@@ -28,17 +17,16 @@ out vec3 tangent;
 out vec3 blockData;
 
 void main() {
-    vec4 viewPos = modelViewMatrix * vec4(vaPosition + chunkOffset, 1.0);
-    vec4 worldPos = vec4(cameraPosition, 1.0) + gbufferModelViewInverse * viewPos;
+    vec4 viewPos = gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0);
 
-    gl_Position = projectionMatrix * viewPos;
+    gl_Position = ftransform();
 
-    texCoord = vaUV0;
-    vexColor = vaColor;
-    geoNormal = vaNormal;
-    tangent = normalize(normalMatrix * at_tangent.xyz);
+    texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+    vexColor = gl_Color;
+    geoNormal = gl_Normal.xyz;
+    tangent = gl_NormalMatrix * normalize(at_tangent.xyz);
     viewSpacePos = viewPos;
     blockData = mc_Entity;
 
-    lightCoord = vaUV2 * (1.0 / 256.0) + (1.0 / 32.0);
+    lightCoord = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 }
