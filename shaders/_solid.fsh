@@ -67,15 +67,15 @@ void main() {
     if (albedoColor.a <= alphaTestRef) discard;
     albedoColor.rgb = mix(albedoColor.rgb, entityColor.rgb, entityColor.a);
 
-    #ifdef MAT_PASS_ENTITIES
-    albedoColor.a *= vexColor.a;
-    // this doesnt even work
-    if (entityId == ENTITY_ID_SHADOW) {
-        // special entity, dont run lighting
+#ifdef MAT_PASS_ENTITIES
+    albedoColor *= vexColor;
+
+    // special entities, dont run lighting
+    if (entityId == ENTITY_ID_SHADOW || entityId == 0) {
         outColor0 = unlinearColor(albedoColor);
         return;
     }
-    #endif
+#endif
 
     vec3 worldPos = viewPosToWorldPos(viewSpacePos.xyz);
 
