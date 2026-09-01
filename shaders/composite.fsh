@@ -68,7 +68,8 @@ vec3 getBlockLightColor(float amt) {
 }
 
 vec3 getSkyLightColor(float amt) {
-    return vec3(smoothstep(0.0, 1.0, amt));
+    // missing blue tint at night
+    return vec3(smoothstep(-0.15, 1.0, amt));
 }
 
 void main() {
@@ -147,12 +148,13 @@ void main() {
 #endif
     vec3 skyLightColor = getSkyLightColor(lightCoord.y);
 
-    vec3 ambientLight = clamp(blockLightColor + 0.2 * skyLightColor, 0.0, 0.9) * clamp(dot(normal, normal), 0.0, 1.0) * aoAmount;
+    vec3 ambientLight = clamp(blockLightColor + 0.2 * skyLightColor, 0.0, 0.9);
 
     // also use sky light here for night time blueish light
-    vec3 finalColor = skyLightColor * shadowColor * brdf(lightDir, viewDir, roughness, normal, albedoColor.rgb, metallic, reflectance);
+    vec3 finalColor = skyLightColor * shadowColor * brdf(lightDir, viewDir, sqrt(roughness), normal, albedoColor.rgb, metallic, reflectance);
     // prevents the block from being too dark
     finalColor += ambientLight * albedoColor.rgb;
+    finalColor = finalColor * pow(aoAmount, lightCoord.y + 1.0);
 
     outColor0 = unlinearColor(vec4(finalColor, albedoColor.a));
 }
