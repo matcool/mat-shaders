@@ -11,14 +11,9 @@ uniform sampler2D gtexture;
 uniform sampler2D lightmap;
 uniform sampler2D normals;
 uniform sampler2D specular;
-uniform sampler2DShadow shadowtex0;
-uniform sampler2DShadow shadowtex1;
-uniform sampler2D shadowcolor0;
-uniform sampler2D shadowcolor1;
 
 uniform vec4 entityColor;
 
-uniform vec3 shadowLightPosition;
 uniform vec3 eyePosition;
 uniform vec3 playerLookVector;
 

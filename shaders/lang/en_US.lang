@@ -20,3 +20,8 @@ option.ENABLE_EASTER_EGG = Enable Easter Egg
 
 option.DISABLE_BLOCK_LIGHT_TINT = Disable Light Yellow Tint
 option.DISABLE_BLOCK_LIGHT_TINT.comment = Makes block light use a grayscale lightmap, instead of tinting to yellow
+
+option.ROUGHNESS_EXPONENT = Roughness Exponent
+option.ROUGHNESS_EXPONENT.comment = Adjusts how strong the LabPBR roughness is.\nHigher value means shinier
+
+screen.MATERIALS = Materials

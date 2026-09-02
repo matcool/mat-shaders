@@ -150,8 +150,10 @@ void main() {
 
     vec3 ambientLight = clamp(blockLightColor + 0.2 * skyLightColor, 0.0, 0.9);
 
+    roughness = pow(roughness, ROUGHNESS_EXPONENT);
+
     // also use sky light here for night time blueish light
-    vec3 finalColor = skyLightColor * shadowColor * brdf(lightDir, viewDir, sqrt(roughness), normal, albedoColor.rgb, metallic, reflectance);
+    vec3 finalColor = skyLightColor * shadowColor * brdf(lightDir, viewDir, roughness, normal, albedoColor.rgb, metallic, reflectance);
     // prevents the block from being too dark
     finalColor += ambientLight * albedoColor.rgb;
     finalColor = finalColor * pow(aoAmount, lightCoord.y + 1.0);

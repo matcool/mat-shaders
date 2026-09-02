@@ -15,4 +15,6 @@ const float sunPathRotation = -30.0; // [-45.0 -30.0 -15.0 0.0 15.0 30.0 45.0]
 
 //#define DISABLE_BLOCK_LIGHT_TINT
 
+#define ROUGHNESS_EXPONENT 0.7 // [0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.1 1.2 1.3 1.4 1.5]
+
 #endif // _H_OPTIONS_
