@@ -10,6 +10,8 @@ option.SHADOW_DISTORT_FACTOR.comment = Amount to distort shadow space by.\nSmall
 option.ENABLE_SHADOW_DISTORT = Enable Shadow Distortion
 option.ENABLE_SHADOW_DISTORT.comment = Whether to apply shadow space distortion, should never be off
 
+option.ENABLE_SHADOW_COLOR = Enable Colored Shadows
+
 option.ambientOcclusionLevel = Ambient Occlusion Level
 option.ambientOcclusionLevel.comment = Level of ambient occlusion for shading blocks
 

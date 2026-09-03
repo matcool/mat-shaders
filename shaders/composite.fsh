@@ -112,19 +112,24 @@ void main() {
     vec3 shadowScreenPos = worldPosToShadowScreenPos(worldPos, normal);
     float acneBias = 0.001;
     float shadowMult = calculateShadowVisibility(shadowtex0, shadowScreenPos, acneBias);
-    float shadowSolidMult = calculateShadowVisibility(shadowtex1, shadowScreenPos, acneBias);
-    vec3 shadowBlockColor = texture(shadowcolor0, shadowScreenPos.xy).rgb;
-    vec3 shadowBlockData = texture(shadowcolor1, shadowScreenPos.xy).rgb;
+    #ifdef ENABLE_SHADOW_COLOR
+        float shadowSolidMult = calculateShadowVisibility(shadowtex1, shadowScreenPos, acneBias);
+        vec3 shadowBlockColor = texture(shadowcolor0, shadowScreenPos.xy).rgb;
 
-    // TODO: should be BLOCK_ID_WATER here but it doesnt work..
-    if (shadowBlockData.x == 1) {
-        // block is water, so apply fake caustics
-        vec3 causticsPos = worldPos + cross(worldPos, lightDir) * 0.01;
-        // DEBUG_COLOR(fract(causticsPos));
-        shadowBlockColor = calculateWaterCaustics(causticsPos, shadowBlockColor, frameTimeCounter);
-        // DEBUG_COLOR(shadowBlockColor);
-    }
-    vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
+        vec3 shadowBlockData = texture(shadowcolor1, shadowScreenPos.xy).rgb;
+
+        // TODO: should be BLOCK_ID_WATER here but it doesnt work..
+        if (shadowBlockData.x == 1) {
+            // block is water, so apply fake caustics
+            vec3 causticsPos = worldPos + cross(worldPos, lightDir) * 0.01;
+            // DEBUG_COLOR(fract(causticsPos));
+            shadowBlockColor = calculateWaterCaustics(causticsPos, shadowBlockColor, frameTimeCounter);
+            // DEBUG_COLOR(shadowBlockColor);
+        }
+        vec3 shadowColor = mix(vec3(shadowMult), shadowBlockColor, clamp(shadowSolidMult - shadowMult, 0.0, 1.0));
+    #else
+        vec3 shadowColor = vec3(shadowMult);
+    #endif
 #else
     // use skylight amount for shadow color /shrug
     vec3 shadowColor = vec3(linearMap(smoothstep(0.9, 0.95, lightCoord.y), 0.0, 1.0, 0.4, 1.0));
